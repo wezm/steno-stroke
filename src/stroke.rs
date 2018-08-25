@@ -140,3 +140,19 @@ impl From<Vec<Stroke>> for Outline {
         Outline(strokes)
     }
 }
+
+#[test]
+fn test_stroke_raw_steno() {
+    assert_eq!(Stroke::all().raw_steno(), "#STKPWHRAO*EUFRPBLGTSDZ");
+}
+
+#[test]
+fn test_outline_raw_steno() {
+    let mut outline = Outline::new();
+    let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
+    outline.push(stroke);
+    let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
+    outline.push(stroke);
+
+    assert_eq!(outline.raw_steno(), "TEFT/TEFT");
+}
