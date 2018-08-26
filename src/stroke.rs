@@ -85,29 +85,75 @@ impl Stroke {
     pub fn raw_steno(&self) -> String {
         let mut raw = String::new();
 
-        if *self & Stroke::HASH == Stroke::HASH { raw.push('#') }
-        if *self & Stroke::S    == Stroke::S    { raw.push('S') }
-        if *self & Stroke::T    == Stroke::T    { raw.push('T') }
-        if *self & Stroke::K    == Stroke::K    { raw.push('K') }
-        if *self & Stroke::P    == Stroke::P    { raw.push('P') }
-        if *self & Stroke::W    == Stroke::W    { raw.push('W') }
-        if *self & Stroke::H    == Stroke::H    { raw.push('H') }
-        if *self & Stroke::R    == Stroke::R    { raw.push('R') }
-        if *self & Stroke::A    == Stroke::A    { raw.push('A') }
-        if *self & Stroke::O    == Stroke::O    { raw.push('O') }
-        if *self & Stroke::STAR == Stroke::STAR { raw.push('*') }
-        if *self & Stroke::E    == Stroke::E    { raw.push('E') }
-        if *self & Stroke::U    == Stroke::U    { raw.push('U') }
-        if *self & Stroke::F    == Stroke::F    { raw.push('F') }
-        if *self & Stroke::RR   == Stroke::RR   { raw.push('R') }
-        if *self & Stroke::RP   == Stroke::RP   { raw.push('P') }
-        if *self & Stroke::B    == Stroke::B    { raw.push('B') }
-        if *self & Stroke::L    == Stroke::L    { raw.push('L') }
-        if *self & Stroke::G    == Stroke::G    { raw.push('G') }
-        if *self & Stroke::RT   == Stroke::RT   { raw.push('T') }
-        if *self & Stroke::RS   == Stroke::RS   { raw.push('S') }
-        if *self & Stroke::D    == Stroke::D    { raw.push('D') }
-        if *self & Stroke::Z    == Stroke::Z    { raw.push('Z') }
+        if *self & Stroke::HASH == Stroke::HASH {
+            raw.push('#')
+        }
+        if *self & Stroke::S == Stroke::S {
+            raw.push('S')
+        }
+        if *self & Stroke::T == Stroke::T {
+            raw.push('T')
+        }
+        if *self & Stroke::K == Stroke::K {
+            raw.push('K')
+        }
+        if *self & Stroke::P == Stroke::P {
+            raw.push('P')
+        }
+        if *self & Stroke::W == Stroke::W {
+            raw.push('W')
+        }
+        if *self & Stroke::H == Stroke::H {
+            raw.push('H')
+        }
+        if *self & Stroke::R == Stroke::R {
+            raw.push('R')
+        }
+        if *self & Stroke::A == Stroke::A {
+            raw.push('A')
+        }
+        if *self & Stroke::O == Stroke::O {
+            raw.push('O')
+        }
+        if *self & Stroke::STAR == Stroke::STAR {
+            raw.push('*')
+        }
+        if *self & Stroke::E == Stroke::E {
+            raw.push('E')
+        }
+        if *self & Stroke::U == Stroke::U {
+            raw.push('U')
+        }
+        if *self & Stroke::F == Stroke::F {
+            raw.push('F')
+        }
+        if *self & Stroke::RR == Stroke::RR {
+            raw.push('R')
+        }
+        if *self & Stroke::RP == Stroke::RP {
+            raw.push('P')
+        }
+        if *self & Stroke::B == Stroke::B {
+            raw.push('B')
+        }
+        if *self & Stroke::L == Stroke::L {
+            raw.push('L')
+        }
+        if *self & Stroke::G == Stroke::G {
+            raw.push('G')
+        }
+        if *self & Stroke::RT == Stroke::RT {
+            raw.push('T')
+        }
+        if *self & Stroke::RS == Stroke::RS {
+            raw.push('S')
+        }
+        if *self & Stroke::D == Stroke::D {
+            raw.push('D')
+        }
+        if *self & Stroke::Z == Stroke::Z {
+            raw.push('Z')
+        }
 
         raw
     }
@@ -131,7 +177,11 @@ impl Outline {
     }
 
     pub fn raw_steno(&self) -> String {
-        self.0.iter().map(|stroke| stroke.raw_steno()).collect::<Vec<_>>().join("/")
+        self.0
+            .iter()
+            .map(|stroke| stroke.raw_steno())
+            .collect::<Vec<_>>()
+            .join("/")
     }
 }
 
