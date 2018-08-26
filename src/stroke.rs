@@ -1,7 +1,6 @@
 extern crate x11;
 
-use self::x11::xlib;
-use keysym::*;
+use hotkey::KeyPress;
 
 // Steno order: STKPWHRAO*EUFRPBLGTSDZ
 bitflags! {
@@ -36,49 +35,50 @@ bitflags! {
 pub struct Outline(Vec<Stroke>);
 
 impl Stroke {
-    // TODO: Replace with KeyPress enum so match can be ensured exhaustive
-    pub fn set_keysym(&mut self, keysym: xlib::KeySym) {
+    pub fn set_keypress(&mut self, keysym: &KeyPress) {
+        use self::KeyPress::*;
+
         match keysym {
-            XK_A => self.set(Stroke::S, true),
-            XK_B => (),
-            XK_C => self.set(Stroke::A, true),
-            XK_D => self.set(Stroke::W, true),
-            XK_E => self.set(Stroke::P, true),
-            XK_F => self.set(Stroke::R, true),
-            XK_G => self.set(Stroke::STAR, true),
-            XK_H => self.set(Stroke::STAR, true),
-            XK_I => self.set(Stroke::RP, true),
-            XK_J => self.set(Stroke::RR, true),
-            XK_K => self.set(Stroke::B, true),
-            XK_L => self.set(Stroke::G, true),
-            XK_M => self.set(Stroke::U, true),
-            XK_N => self.set(Stroke::E, true),
-            XK_O => self.set(Stroke::L, true),
-            XK_P => self.set(Stroke::RT, true),
-            XK_Q => self.set(Stroke::S, true),
-            XK_R => self.set(Stroke::H, true),
-            XK_S => self.set(Stroke::K, true),
-            XK_T => self.set(Stroke::STAR, true),
-            XK_U => self.set(Stroke::F, true),
-            XK_V => self.set(Stroke::O, true),
-            XK_W => self.set(Stroke::T, true),
-            XK_X => (),
-            XK_Y => self.set(Stroke::STAR, true),
-            XK_Z => (),
-            XK_1 => self.set(Stroke::HASH, true),
-            XK_2 => self.set(Stroke::HASH, true),
-            XK_3 => self.set(Stroke::HASH, true),
-            XK_4 => self.set(Stroke::HASH, true),
-            XK_5 => self.set(Stroke::HASH, true),
-            XK_6 => self.set(Stroke::HASH, true),
-            XK_7 => self.set(Stroke::HASH, true),
-            XK_8 => self.set(Stroke::HASH, true),
-            XK_9 => self.set(Stroke::HASH, true),
-            XK_0 => self.set(Stroke::HASH, true),
-            XK_SEMICOLON => self.set(Stroke::RS, true),
-            XK_BRACKET_LEFT => self.set(Stroke::D, true),
-            XK_BACKSLASH => self.set(Stroke::Z, true),
-            _ => (),
+            KeyA => self.set(Stroke::S, true),
+            KeyB => (),
+            KeyC => self.set(Stroke::A, true),
+            KeyD => self.set(Stroke::W, true),
+            KeyE => self.set(Stroke::P, true),
+            KeyF => self.set(Stroke::R, true),
+            KeyG => self.set(Stroke::STAR, true),
+            KeyH => self.set(Stroke::STAR, true),
+            KeyI => self.set(Stroke::RP, true),
+            KeyJ => self.set(Stroke::RR, true),
+            KeyK => self.set(Stroke::B, true),
+            KeyL => self.set(Stroke::G, true),
+            KeyM => self.set(Stroke::U, true),
+            KeyN => self.set(Stroke::E, true),
+            KeyO => self.set(Stroke::L, true),
+            KeyP => self.set(Stroke::RT, true),
+            KeyQ => self.set(Stroke::S, true),
+            KeyR => self.set(Stroke::H, true),
+            KeyS => self.set(Stroke::K, true),
+            KeyT => self.set(Stroke::STAR, true),
+            KeyU => self.set(Stroke::F, true),
+            KeyV => self.set(Stroke::O, true),
+            KeyW => self.set(Stroke::T, true),
+            KeyX => (),
+            KeyY => self.set(Stroke::STAR, true),
+            KeyZ => (),
+            Key1 => self.set(Stroke::HASH, true),
+            Key2 => self.set(Stroke::HASH, true),
+            Key3 => self.set(Stroke::HASH, true),
+            Key4 => self.set(Stroke::HASH, true),
+            Key5 => self.set(Stroke::HASH, true),
+            Key6 => self.set(Stroke::HASH, true),
+            Key7 => self.set(Stroke::HASH, true),
+            Key8 => self.set(Stroke::HASH, true),
+            Key9 => self.set(Stroke::HASH, true),
+            Key0 => self.set(Stroke::HASH, true),
+            KeySpace => (),
+            KeyBracketLeft => self.set(Stroke::D, true),
+            KeySemicolon => self.set(Stroke::RS, true),
+            KeyBackslash => self.set(Stroke::Z, true),
         }
     }
 
