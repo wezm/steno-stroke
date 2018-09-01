@@ -1,7 +1,9 @@
 extern crate x11;
 
+use std::str::FromStr;
 use radix_trie::TrieKey;
 use hotkey::KeyPress;
+use error::Error;
 
 // Steno order: STKPWHRAO*EUFRPBLGTSDZ
 bitflags! {
@@ -161,6 +163,58 @@ impl Stroke {
     }
 }
 
+impl FromStr for Stroke {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut stroke = Stroke::empty();
+        let mut right = false;
+
+        fn maybe_set_right(stroke: &mut Stroke, left: Stroke, right: Stroke, is_right: bool) {
+            if is_right || stroke.intersects(left) {
+                stroke.set(right, true);
+            } else {
+                stroke.set(left, true);
+            }
+        }
+
+        for c in s.chars() {
+            match c {
+                '-' => right = true,
+                '#' => stroke.set(Stroke::HASH, true),
+                'S' => maybe_set_right(&mut stroke, Stroke::S, Stroke::RS, right),
+                'T' => maybe_set_right(&mut stroke, Stroke::T, Stroke::RT, right),
+                'K' => stroke.set(Stroke::K, true),
+                'P' => maybe_set_right(&mut stroke, Stroke::P, Stroke::RP, right),
+                'W' => stroke.set(Stroke::W, true),
+                'H' => stroke.set(Stroke::H, true),
+                'R' => maybe_set_right(&mut stroke, Stroke::R, Stroke::RR, right),
+                'A' => stroke.set(Stroke::A, true),
+                'O' => stroke.set(Stroke::O, true),
+                '*' => {
+                    right = true;
+                    stroke.set(Stroke::STAR, true)
+                }
+                'E' => stroke.set(Stroke::E, true),
+                'U' => stroke.set(Stroke::U, true),
+                'F' => stroke.set(Stroke::F, true),
+                // 'RR' => stroke.set(Stroke::, true),
+                // 'RP' => stroke.set(Stroke::, true),
+                'B' => stroke.set(Stroke::B, true),
+                'L' => stroke.set(Stroke::L, true),
+                'G' => stroke.set(Stroke::G, true),
+                // 'RT' => stroke.set(Stroke::, true),
+                // 'RS' => stroke.set(Stroke::, true),
+                'D' => stroke.set(Stroke::D, true),
+                'Z' => stroke.set(Stroke::Z, true),
+                _ => (),
+            }
+        }
+
+        Ok(stroke)
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Outline(Vec<Stroke>);
 
@@ -210,6 +264,17 @@ impl From<Vec<Stroke>> for Outline {
     }
 }
 
+impl FromStr for Outline {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let strokes = s.split("/")
+            .map(Stroke::from_str)
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Outline::from(strokes))
+    }
+}
+
 impl Default for Outline {
     fn default() -> Self {
         Outline(Default::default())
@@ -227,18 +292,53 @@ impl TrieKey for Outline {
     }
 }
 
-#[test]
-fn test_stroke_raw_steno() {
-    assert_eq!(Stroke::all().raw_steno(), "#STKPWHRAO*EUFRPBLGTSDZ");
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_outline_raw_steno() {
-    let mut outline = Outline::new();
-    let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
-    outline.push(stroke);
-    let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
-    outline.push(stroke);
+    #[test]
+    fn test_stroke_raw_steno() {
+        assert_eq!(Stroke::all().raw_steno(), "#STKPWHRAO*EUFRPBLGTSDZ");
+    }
 
-    assert_eq!(outline.raw_steno(), "TEFT/TEFT");
+    #[test]
+    fn test_outline_raw_steno() {
+        let mut outline = Outline::new();
+        let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
+        outline.push(stroke);
+        outline.push(stroke);
+
+        assert_eq!(outline.raw_steno(), "TEFT/TEFT");
+    }
+
+    #[test]
+    fn test_stroke_from_str() {
+        let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
+        assert_eq!(Stroke::from_str("TEFT").expect("parse error"), stroke);
+    }
+
+    #[test]
+    fn test_stroke_from_str_dash() {
+        let stroke = Stroke::S | Stroke::RP | Stroke::RT;
+        assert_eq!(Stroke::from_str("S-PT").expect("parse error"), stroke);
+    }
+
+    #[test]
+    fn test_stroke_from_str_star() {
+        let stroke = Stroke::W | Stroke::STAR | Stroke::RR;
+        assert_eq!(Stroke::from_str("W*R").expect("parse error"), stroke);
+    }
+
+    #[test]
+    fn test_outline_from_str() {
+        let mut outline = Outline::new();
+        let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
+        outline.push(stroke);
+        outline.push(stroke);
+
+        assert_eq!(
+            Outline::from_str("TEFT/TEFT").expect("parse error"),
+            outline
+        );
+    }
 }
