@@ -1,5 +1,6 @@
 extern crate x11;
 
+use radix_trie::TrieKey;
 use hotkey::KeyPress;
 
 // Steno order: STKPWHRAO*EUFRPBLGTSDZ
@@ -30,9 +31,6 @@ bitflags! {
         const Z    = 0b10000000000000000000000;
     }
 }
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Outline(Vec<Stroke>);
 
 impl Stroke {
     pub fn set_keypress(&mut self, keysym: &KeyPress) {
@@ -82,82 +80,89 @@ impl Stroke {
         }
     }
 
-    pub fn raw_steno(&self) -> String {
+    pub fn raw_steno(self) -> String {
         let mut raw = String::new();
 
-        if *self & Stroke::HASH == Stroke::HASH {
+        if self & Stroke::HASH == Stroke::HASH {
             raw.push('#')
         }
-        if *self & Stroke::S == Stroke::S {
+        if self & Stroke::S == Stroke::S {
             raw.push('S')
         }
-        if *self & Stroke::T == Stroke::T {
+        if self & Stroke::T == Stroke::T {
             raw.push('T')
         }
-        if *self & Stroke::K == Stroke::K {
+        if self & Stroke::K == Stroke::K {
             raw.push('K')
         }
-        if *self & Stroke::P == Stroke::P {
+        if self & Stroke::P == Stroke::P {
             raw.push('P')
         }
-        if *self & Stroke::W == Stroke::W {
+        if self & Stroke::W == Stroke::W {
             raw.push('W')
         }
-        if *self & Stroke::H == Stroke::H {
+        if self & Stroke::H == Stroke::H {
             raw.push('H')
         }
-        if *self & Stroke::R == Stroke::R {
+        if self & Stroke::R == Stroke::R {
             raw.push('R')
         }
-        if *self & Stroke::A == Stroke::A {
+        if self & Stroke::A == Stroke::A {
             raw.push('A')
         }
-        if *self & Stroke::O == Stroke::O {
+        if self & Stroke::O == Stroke::O {
             raw.push('O')
         }
-        if *self & Stroke::STAR == Stroke::STAR {
+        if self & Stroke::STAR == Stroke::STAR {
             raw.push('*')
         }
-        if *self & Stroke::E == Stroke::E {
+        if self & Stroke::E == Stroke::E {
             raw.push('E')
         }
-        if *self & Stroke::U == Stroke::U {
+        if self & Stroke::U == Stroke::U {
             raw.push('U')
         }
-        if *self & Stroke::F == Stroke::F {
+        if self & Stroke::F == Stroke::F {
             raw.push('F')
         }
-        if *self & Stroke::RR == Stroke::RR {
+        if self & Stroke::RR == Stroke::RR {
             raw.push('R')
         }
-        if *self & Stroke::RP == Stroke::RP {
+        if self & Stroke::RP == Stroke::RP {
             raw.push('P')
         }
-        if *self & Stroke::B == Stroke::B {
+        if self & Stroke::B == Stroke::B {
             raw.push('B')
         }
-        if *self & Stroke::L == Stroke::L {
+        if self & Stroke::L == Stroke::L {
             raw.push('L')
         }
-        if *self & Stroke::G == Stroke::G {
+        if self & Stroke::G == Stroke::G {
             raw.push('G')
         }
-        if *self & Stroke::RT == Stroke::RT {
+        if self & Stroke::RT == Stroke::RT {
             raw.push('T')
         }
-        if *self & Stroke::RS == Stroke::RS {
+        if self & Stroke::RS == Stroke::RS {
             raw.push('S')
         }
-        if *self & Stroke::D == Stroke::D {
+        if self & Stroke::D == Stroke::D {
             raw.push('D')
         }
-        if *self & Stroke::Z == Stroke::Z {
+        if self & Stroke::Z == Stroke::Z {
             raw.push('Z')
         }
 
         raw
     }
+
+    pub fn is_star(self) -> bool {
+        self == Stroke::STAR
+    }
 }
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Outline(Vec<Stroke>);
 
 impl Outline {
     pub fn new() -> Self {
@@ -168,12 +173,22 @@ impl Outline {
         self.0.push(stroke);
     }
 
-    pub fn compact(&mut self) {
-        self.0 = vec![self.0.pop().expect("cannot compact empty outline")];
+    pub fn pop(&mut self) -> Option<Stroke> {
+        self.0.pop()
+    }
+
+    pub fn split(&mut self) -> Outline {
+        let split_at = self.0.len() - 1;
+        let new = self.0.split_off(split_at);
+        Outline::from(new)
     }
 
     pub fn is_multistroke(&self) -> bool {
         self.0.len() > 1
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
     }
 
     pub fn raw_steno(&self) -> String {
@@ -183,11 +198,32 @@ impl Outline {
             .collect::<Vec<_>>()
             .join("/")
     }
+
+    pub fn strokes(&self) -> &[Stroke] {
+        &self.0
+    }
 }
 
 impl From<Vec<Stroke>> for Outline {
     fn from(strokes: Vec<Stroke>) -> Self {
         Outline(strokes)
+    }
+}
+
+impl Default for Outline {
+    fn default() -> Self {
+        Outline(Default::default())
+    }
+}
+
+impl TrieKey for Outline {
+    fn encode_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        for stroke in self.0.iter() {
+            bytes.append(&mut stroke.bits().encode_bytes());
+        }
+
+        bytes
     }
 }
 
