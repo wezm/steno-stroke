@@ -171,7 +171,8 @@ impl FromStr for Stroke {
         let mut right = false;
 
         fn maybe_set_right(stroke: &mut Stroke, left: Stroke, right: Stroke, is_right: bool) {
-            if is_right || stroke.intersects(left) {
+            // stroke > left will set the right bit if any bit after left is set
+            if is_right || *stroke >= left {
                 stroke.set(right, true);
             } else {
                 stroke.set(left, true);
@@ -191,10 +192,7 @@ impl FromStr for Stroke {
                 'R' => maybe_set_right(&mut stroke, Stroke::R, Stroke::RR, right),
                 'A' => stroke.set(Stroke::A, true),
                 'O' => stroke.set(Stroke::O, true),
-                '*' => {
-                    right = true;
-                    stroke.set(Stroke::STAR, true)
-                }
+                '*' => stroke.set(Stroke::STAR, true),
                 'E' => stroke.set(Stroke::E, true),
                 'U' => stroke.set(Stroke::U, true),
                 'F' => stroke.set(Stroke::F, true),
@@ -315,6 +313,12 @@ mod tests {
     fn test_stroke_from_str() {
         let stroke = Stroke::T | Stroke::E | Stroke::F | Stroke::RT;
         assert_eq!(Stroke::from_str("TEFT").expect("parse error"), stroke);
+    }
+
+    #[test]
+    fn test_stroke_from_str_right_t() {
+        let stroke = Stroke::K | Stroke::A | Stroke::RT;
+        assert_eq!(Stroke::from_str("KAT").expect("parse error"), stroke);
     }
 
     #[test]
