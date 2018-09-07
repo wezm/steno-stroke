@@ -39,6 +39,7 @@ impl Stroke {
         use self::KeyPress::*;
 
         match keysym {
+            KeyEsc => (),
             KeyA => self.set(Stroke::S, true),
             KeyB => (),
             KeyC => self.set(Stroke::A, true),
