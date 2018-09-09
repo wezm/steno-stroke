@@ -1,5 +1,3 @@
-extern crate x11;
-
 use std::str::FromStr;
 use radix_trie::TrieKey;
 use hotkey::KeyPress;
