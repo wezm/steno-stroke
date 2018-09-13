@@ -266,7 +266,7 @@ impl FromStr for Outline {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let strokes = s
-            .split("/")
+            .split('/')
             .map(Stroke::from_str)
             .collect::<Result<Vec<_>, _>>()?;
         Ok(Outline::from(strokes))
@@ -282,7 +282,7 @@ impl Default for Outline {
 impl TrieKey for Outline {
     fn encode_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
-        for stroke in self.0.iter() {
+        for stroke in &self.0 {
             bytes.append(&mut stroke.bits().encode_bytes());
         }
 
