@@ -1,9 +1,7 @@
-extern crate x11;
-
-use std::str::FromStr;
-use radix_trie::TrieKey;
-use hotkey::KeyPress;
 use error::Error;
+use hotkey::KeyPress;
+use radix_trie::TrieKey;
+use std::str::FromStr;
 
 // Steno order: STKPWHRAO*EUFRPBLGTSDZ
 bitflags! {
@@ -267,7 +265,8 @@ impl FromStr for Outline {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let strokes = s.split("/")
+        let strokes = s
+            .split('/')
             .map(Stroke::from_str)
             .collect::<Result<Vec<_>, _>>()?;
         Ok(Outline::from(strokes))
@@ -283,7 +282,7 @@ impl Default for Outline {
 impl TrieKey for Outline {
     fn encode_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
-        for stroke in self.0.iter() {
+        for stroke in &self.0 {
             bytes.append(&mut stroke.bits().encode_bytes());
         }
 
