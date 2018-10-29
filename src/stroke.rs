@@ -29,6 +29,16 @@ bitflags! {
         const RS   = 0b00100000000000000000000;
         const D    = 0b01000000000000000000000;
         const Z    = 0b10000000000000000000000;
+        const NUM1 = 0b00000000000000000000011;
+        const NUM2 = 0b00000000000000000000101;
+        const NUM3 = 0b00000000000000000010001;
+        const NUM4 = 0b00000000000000001000001;
+        const NUM5 = 0b00000000000000100000001;
+        const NUM0 = 0b00000000000001000000001;
+        const NUM6 = 0b00000000010000000000001;
+        const NUM7 = 0b00000001000000000000001;
+        const NUM8 = 0b00000100000000000000001;
+        const NUM9 = 0b00010000000000000000001;
     }
 }
 
@@ -204,6 +214,16 @@ impl FromStr for Stroke {
                 // 'RS' => stroke.set(Stroke::, true),
                 'D' => stroke.set(Stroke::D, true),
                 'Z' => stroke.set(Stroke::Z, true),
+                '0' => stroke.set(Stroke::NUM0, true),
+                '1' => stroke.set(Stroke::NUM1, true),
+                '2' => stroke.set(Stroke::NUM2, true),
+                '3' => stroke.set(Stroke::NUM3, true),
+                '4' => stroke.set(Stroke::NUM4, true),
+                '5' => stroke.set(Stroke::NUM5, true),
+                '6' => stroke.set(Stroke::NUM6, true),
+                '7' => stroke.set(Stroke::NUM7, true),
+                '8' => stroke.set(Stroke::NUM8, true),
+                '9' => stroke.set(Stroke::NUM9, true),
                 _ => (),
             }
         }
@@ -331,6 +351,17 @@ mod tests {
     fn test_stroke_from_str_star() {
         let stroke = Stroke::W | Stroke::STAR | Stroke::RR;
         assert_eq!(Stroke::from_str("W*R").expect("parse error"), stroke);
+    }
+
+    #[test]
+    fn test_stroke_from_str_number() {
+        let stroke = Stroke::NUM2 | Stroke::Z;
+        assert_eq!(Stroke::from_str("2-Z").expect("parse error"), stroke);
+    }
+
+    #[test]
+    fn test_number_stroke_raw_steno() {
+        assert_eq!((Stroke::NUM2 | Stroke::Z).raw_steno(), "#TZ");
     }
 
     #[test]
