@@ -16,7 +16,6 @@ bitflags! {
         const R    = 0b00000000000000010000000;
         const A    = 0b00000000000000100000000;
         const O    = 0b00000000000001000000000;
-        const LEFT = 0b00000000000001111111110;
         const STAR = 0b00000000000010000000000;
         const E    = 0b00000000000100000000000;
         const U    = 0b00000000001000000000000;
@@ -30,6 +29,8 @@ bitflags! {
         const RS   = 0b00100000000000000000000;
         const D    = 0b01000000000000000000000;
         const Z    = 0b10000000000000000000000;
+
+        const LEFT = 0b00000000000001111111110;
         const RGHT = 0b11111111111110000000000;
         const NUM1 = 0b00000000000000000000011;
         const NUM2 = 0b00000000000000000000101;
@@ -41,6 +42,7 @@ bitflags! {
         const NUM7 = 0b00000001000000000000001;
         const NUM8 = 0b00000100000000000000001;
         const NUM9 = 0b00010000000000000000001;
+        const NUM  = 0b00010101010001101010111;
     }
 }
 
@@ -174,6 +176,10 @@ impl Stroke {
 
     pub fn is_star(self) -> bool {
         self == Stroke::STAR
+    }
+
+    pub fn is_number(self) -> bool {
+        self | Stroke::NUM == Stroke::NUM
     }
 
     fn requires_disambiguation(self) -> bool {
@@ -378,6 +384,18 @@ mod tests {
     #[test]
     fn test_number_stroke_raw_steno() {
         assert_eq!((Stroke::NUM2 | Stroke::Z).raw_steno(), "#TZ");
+    }
+
+    #[test]
+    fn test_is_number_non_number() {
+        let stroke = Stroke::NUM1 | Stroke::NUM2 | Stroke::NUM3 | Stroke::Z;
+        assert!(!stroke.is_number());
+    }
+
+    #[test]
+    fn test_is_number_on_number() {
+        let stroke = Stroke::NUM1 | Stroke::NUM2 | Stroke::NUM3;
+        assert!(stroke.is_number());
     }
 
     #[test]
