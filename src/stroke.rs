@@ -1,5 +1,5 @@
-use error::Error;
-use hotkey::KeyPress;
+use crate::error::Error;
+use crate::hotkey::KeyPress;
 use radix_trie::TrieKey;
 use std::str::FromStr;
 
