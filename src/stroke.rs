@@ -184,7 +184,8 @@ impl Stroke {
 
     fn requires_disambiguation(self) -> bool {
         let ambiguous_right_keys = Stroke::RS | Stroke::RT | Stroke::RP | Stroke::RR;
-        self & ambiguous_right_keys != Stroke::empty() && self & Stroke::LEFT == Stroke::empty()
+        let vowels_and_star = Stroke::A | Stroke::O | Stroke::STAR | Stroke::E | Stroke::U;
+        self & ambiguous_right_keys != Stroke::empty() && self & vowels_and_star == Stroke::empty()
     }
 }
 
@@ -367,6 +368,16 @@ mod tests {
     fn test_ambiguous_raw_steno() {
         let stroke = Stroke::RP | Stroke::RT;
         assert_eq!(stroke.raw_steno(), "-PT");
+
+        let stroke = Stroke::S | Stroke::RP;
+        assert_eq!(stroke.raw_steno(), "S-P");
+
+        // Has a vowel so doesn't need a -
+        let stroke = Stroke::H | Stroke::O | Stroke::L | Stroke::RT;
+        assert_eq!(stroke.raw_steno(), "HOLT");
+
+        let stroke = Stroke::STAR | Stroke::RS;
+        assert_eq!(stroke.raw_steno(), "*S");
     }
 
     #[test]
