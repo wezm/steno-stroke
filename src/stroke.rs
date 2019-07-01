@@ -47,7 +47,7 @@ bitflags! {
 }
 
 impl Stroke {
-    pub fn set_keypress(&mut self, keysym: &KeyPress) {
+    pub fn set_keypress(&mut self, keysym: KeyPress) {
         use self::KeyPress::*;
 
         match keysym {
