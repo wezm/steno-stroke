@@ -179,7 +179,8 @@ impl Stroke {
     }
 
     pub fn is_number(self) -> bool {
-        self | Stroke::NUM == Stroke::NUM
+        // # + number keys and no other keys
+        (self & Stroke::HASH == Stroke::HASH) && (self | Stroke::NUM == Stroke::NUM)
     }
 
     fn requires_disambiguation(self) -> bool {
@@ -407,6 +408,12 @@ mod tests {
     fn test_is_number_on_number() {
         let stroke = Stroke::NUM1 | Stroke::NUM2 | Stroke::NUM3;
         assert!(stroke.is_number());
+    }
+
+    #[test]
+    fn test_is_number_on_h() {
+        let stroke = Stroke::H;
+        assert!(!stroke.is_number());
     }
 
     #[test]
