@@ -1,7 +1,9 @@
+use std::str::FromStr;
+
+use radix_trie::TrieKey;
+
 use crate::error::Error;
 use crate::hotkey::KeyPress;
-use radix_trie::TrieKey;
-use std::str::FromStr;
 
 // Steno order: STKPWHRAO*EUFRPBLGTSDZ
 bitflags! {
