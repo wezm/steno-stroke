@@ -1,9 +1,10 @@
+use std::convert::Infallible;
 use std::str::FromStr;
 
-use radix_trie::TrieKey;
+use bitflags::bitflags;
 
-use crate::error::Error;
-use crate::hotkey::KeyPress;
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Outline(Vec<Stroke>);
 
 // Steno order: STKPWHRAO*EUFRPBLGTSDZ
 bitflags! {
@@ -49,54 +50,6 @@ bitflags! {
 }
 
 impl Stroke {
-    pub fn set_keypress(&mut self, keysym: KeyPress) {
-        use self::KeyPress::*;
-
-        match keysym {
-            KeyEsc => (),
-            KeyA => self.set(Stroke::S, true),
-            KeyB => (),
-            KeyC => self.set(Stroke::A, true),
-            KeyD => self.set(Stroke::W, true),
-            KeyE => self.set(Stroke::P, true),
-            KeyF => self.set(Stroke::R, true),
-            KeyG => self.set(Stroke::STAR, true),
-            KeyH => self.set(Stroke::STAR, true),
-            KeyI => self.set(Stroke::RP, true),
-            KeyJ => self.set(Stroke::RR, true),
-            KeyK => self.set(Stroke::B, true),
-            KeyL => self.set(Stroke::G, true),
-            KeyM => self.set(Stroke::U, true),
-            KeyN => self.set(Stroke::E, true),
-            KeyO => self.set(Stroke::L, true),
-            KeyP => self.set(Stroke::RT, true),
-            KeyQ => self.set(Stroke::S, true),
-            KeyR => self.set(Stroke::H, true),
-            KeyS => self.set(Stroke::K, true),
-            KeyT => self.set(Stroke::STAR, true),
-            KeyU => self.set(Stroke::F, true),
-            KeyV => self.set(Stroke::O, true),
-            KeyW => self.set(Stroke::T, true),
-            KeyX => (),
-            KeyY => self.set(Stroke::STAR, true),
-            KeyZ => (),
-            Key1 => self.set(Stroke::HASH, true),
-            Key2 => self.set(Stroke::HASH, true),
-            Key3 => self.set(Stroke::HASH, true),
-            Key4 => self.set(Stroke::HASH, true),
-            Key5 => self.set(Stroke::HASH, true),
-            Key6 => self.set(Stroke::HASH, true),
-            Key7 => self.set(Stroke::HASH, true),
-            Key8 => self.set(Stroke::HASH, true),
-            Key9 => self.set(Stroke::HASH, true),
-            Key0 => self.set(Stroke::HASH, true),
-            KeySpace => (),
-            KeyBracketLeft => self.set(Stroke::D, true),
-            KeySemicolon => self.set(Stroke::RS, true),
-            KeyBackslash => self.set(Stroke::Z, true),
-        }
-    }
-
     pub fn raw_steno(self) -> String {
         let mut raw = String::new();
 
@@ -193,7 +146,7 @@ impl Stroke {
 }
 
 impl FromStr for Stroke {
-    type Err = Error;
+    type Err = Infallible;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut stroke = Stroke::empty();
@@ -252,9 +205,6 @@ impl FromStr for Stroke {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub struct Outline(Vec<Stroke>);
-
 impl Outline {
     pub fn new() -> Self {
         Outline(Vec::new())
@@ -302,7 +252,7 @@ impl From<Vec<Stroke>> for Outline {
 }
 
 impl FromStr for Outline {
-    type Err = Error;
+    type Err = Infallible;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let strokes = s
@@ -316,17 +266,6 @@ impl FromStr for Outline {
 impl Default for Outline {
     fn default() -> Self {
         Outline(Default::default())
-    }
-}
-
-impl TrieKey for Outline {
-    fn encode_bytes(&self) -> Vec<u8> {
-        let mut bytes = Vec::new();
-        for stroke in &self.0 {
-            bytes.append(&mut stroke.bits().encode_bytes());
-        }
-
-        bytes
     }
 }
 
